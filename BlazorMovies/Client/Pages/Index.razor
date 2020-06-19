@@ -1,7 +1,59 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+    <p>Hello, @StringUtilities.CustomToUpper(name)</p>
+    <p>Let's add 2 + 2 = @(2 + 2)</p>
+    <button @onclick="WriteInLog">Click Me</button>
 
-Welcome to your new app.
+    <div>
+        <h3>Movie</h3>
+        @if (movies == null)
+        {
+            <text>Loading...</text>
+        }
+        else
+        {
+            @foreach (var movie in movies)
+            {
+                <div>
+                    <p>title: <strong>@movie.Title</strong></p>
+                    <p>Release Date: <strong>@movie.ReleaseDate.ToString("dd MMM yyyy")</strong></p>
+                </div>
+            }
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+            @for (var i = 0; i < movies.Count; i++)
+            {
+                <div style="background-color: @(i % 2 == 0? "blue" : "red")">
+                    <p>title: <strong>@movies[i].Title</strong></p>
+                    <p>Release Date: <strong>@movies[i].ReleaseDate.ToString("dd MMM yyyy")</strong></p>
+                </div>
+            }
+        }
+
+
+    </div>
+
+
+
+@code {
+    string name = "Julia";
+    List<Movie> movies;
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        await Task.Delay(3000);
+        movies = new List<Movie>()
+        {
+            new Movie() { Title = "Spider-man: far From Home", ReleaseDate = new DateTime(2019, 7, 2)},
+            new Movie() { Title = "Moana", ReleaseDate = new DateTime(2016, 11, 23)},
+            new Movie() { Title = "Inception", ReleaseDate = new DateTime(2010, 7, 16)}
+        };
+
+        base.OnInitialized();
+    }
+
+    void WriteInLog()
+    {
+        Console.WriteLine("I've been clicked! (From Method)");
+    }
+}
