@@ -1,29 +1,28 @@
 ﻿<h3>MoviesList</h3>
 
-@if (movies == null)
+@if (Movies == null)
 {
     <img src="https://media2.giphy.com/media/3oEjI6SIIHBdRxXI40/200.gif" />
 }
 else
 {
-    @foreach (var movie in movies)
+    <input type="checkbox" @onchange="@(() => displayButtons = !displayButtons)" />
+
+    @foreach (var movie in Movies)
     {
-        <div>
-            <p>title: <strong>@movie.Title</strong></p>
-            <p>Release Date: <strong>@movie.ReleaseDate.ToString("dd MMM yyyy")</strong></p>
-        </div>
+        <IndividualMovie Movie="movie" displayButtons="displayButtons" />
     }
 }
 
 @code {
-    string name = "Julia";
-    List<Movie> movies;
+    [Parameter] public List<Movie> Movies { get; set; }
+    bool displayButtons = false;
 
 
     protected async override Task OnInitializedAsync()
     {
         await Task.Delay(3000);
-        movies = new List<Movie>()
+        Movies = new List<Movie>()
         {
             new Movie() { Title = "Spider-man: far From Home", ReleaseDate = new DateTime(2019, 7, 2)},
             new Movie() { Title = "Moana", ReleaseDate = new DateTime(2016, 11, 23)},
