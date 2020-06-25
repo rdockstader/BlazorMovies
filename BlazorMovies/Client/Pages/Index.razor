@@ -1,11 +1,12 @@
 ﻿@page "/"
+@inject IRepository repository
 
     <div>
         <h3>Movie</h3>
-        <MoviesList Movies="movies"/>
-
-
+        <MoviesList Movies="movies" />
     </div>
+
+    <button @onclick="AddNewMovie">Add New Movie</button>
 
 
 
@@ -14,13 +15,12 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        movies = repository.GetMovies();
+    }
 
-        movies = new List<Movie>()
-        {
-            new Movie() { Title = "Spider-man: far From Home", ReleaseDate = new DateTime(2019, 7, 2)},
-            new Movie() { Title = "Moana", ReleaseDate = new DateTime(2016, 11, 23)},
-            new Movie() { Title = "Inception", ReleaseDate = new DateTime(2010, 7, 16)}
-        };
+    private void AddNewMovie()
+    {
+        movies.Add(new Movie() { Title = "movie sample", ReleaseDate = DateTime.Today });
     }
 
 }

@@ -1,34 +1,46 @@
-﻿<h3>MoviesList</h3>
+﻿
 
-@if (Movies == null)
-{
-    <img src="https://media2.giphy.com/media/3oEjI6SIIHBdRxXI40/200.gif" />
-}
-else
-{
-    <input type="checkbox" @onchange="@(() => displayButtons = !displayButtons)" />
+<input type="checkbox" @bind="displayButtons" />
+<GenericList List="Movies">
+    <ElementTemplate Context="movie">
+        <IndividualMovie Movie="movie" displayButtons="displayButtons" DeleteMovie="DeleteMovie" />
+    </ElementTemplate>
+</GenericList>
 
-    @foreach (var movie in Movies)
-    {
-        <IndividualMovie Movie="movie" displayButtons="displayButtons" />
-    }
-}
+
+
 
 @code {
     [Parameter] public List<Movie> Movies { get; set; }
+
     bool displayButtons = false;
 
 
-    protected async override Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await Task.Delay(3000);
-        Movies = new List<Movie>()
-        {
-            new Movie() { Title = "Spider-man: far From Home", ReleaseDate = new DateTime(2019, 7, 2)},
-            new Movie() { Title = "Moana", ReleaseDate = new DateTime(2016, 11, 23)},
-            new Movie() { Title = "Inception", ReleaseDate = new DateTime(2010, 7, 16)}
-        };
-
         base.OnInitialized();
+        Console.WriteLine($"On Initialized. Movies.Count = {Movies.Count}");
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        Console.WriteLine($"On Parameters Set. Movies.Count = {Movies.Count}");
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        Console.WriteLine($"OnAfterRender. firstRender = {firstRender}");
+    }
+
+    protected override bool ShouldRender()
+    {
+        return true;
+    }
+
+    private void DeleteMovie(Movie movie)
+    {
+        Movies.Remove(movie);
     }
 }

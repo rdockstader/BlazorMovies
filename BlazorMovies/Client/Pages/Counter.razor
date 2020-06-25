@@ -1,18 +1,14 @@
 ﻿@page "/counter"
 
+
 <h1>Counter</h1>
 
 <p>Current count: @currentCount</p>
+<p>Singleton value: @singleton.Value</p>
+<p>Transient Value: @transient.Value</p>
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
-<MoviesList></MoviesList>
+<input type="number" @bind="currentCount" />
 
-@code {
-    private int currentCount = 0;
-
-    private void IncrementCount()
-    {
-        currentCount++;
-    }
-}
+<MoviesList Movies="movies"></MoviesList>
