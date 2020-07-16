@@ -1,5 +1,6 @@
 ﻿using BlazorMovies.Shared.Entities;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,9 @@ namespace BlazorMovies.Client.Pages
     {
         [Inject] SingletonService singleton { get; set; }
         [Inject] TransientService transient { get; set; }
+        [Inject] IJSRuntime js { get; set; }
         private int currentCount = 0;
+        private static int currentStaticCount = 0;
         private List<Movie> movies;
 
         protected override void OnInitialized()
@@ -23,12 +26,24 @@ namespace BlazorMovies.Client.Pages
             new Movie() { Title = "Inception", ReleaseDate = new DateTime(2019, 7, 2)}
         };
         }
-
-        private void IncrementCount()
+        [JSInvokable]
+        public async Task IncrementCount()
         {
             currentCount++;
             transient.Value = currentCount;
             singleton.Value = currentCount;
+            currentStaticCount++;
+            await js.InvokeVoidAsync("dotnetStaticInvocation");
+        }
+
+        private async Task IncrementCountJavaScript()
+        {
+            await js.InvokeVoidAsync("dotnetInstanceInvocation", DotNetObjectReference.Create(this));
+        }
+        [JSInvokable]
+        public static Task<int> GetCurrentCount()
+        {
+            return Task.FromResult(currentStaticCount);
         }
     }
 }
