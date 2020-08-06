@@ -1,37 +1,19 @@
 ﻿@inject IJSRuntime js
 
-<input type="checkbox" @bind="displayButtons" />
-<GenericList List="Movies">
-    <ElementTemplate Context="movie">
-        <IndividualMovie Movie="movie" displayButtons="displayButtons" DeleteMovie="DeleteMovie" />
-    </ElementTemplate>
-</GenericList>
+    <div class="movies-container">
+        <GenericList List="Movies">
+            <ElementTemplate Context="movie">
+                <IndividualMovie Movie="movie" DeleteMovie="DeleteMovie" />
+            </ElementTemplate>
+        </GenericList>
+    </div>
 
-<Confirmation @ref="confirmation" onCancel="onCancel" onConfirm="onConfirm">
-    Do you wish to delete @movieToBeDeleted.Title?
-</Confirmation>
+
 
 
 @code {
-    Confirmation confirmation;
     [Parameter] public List<Movie> Movies { get; set; }
 
-    bool displayButtons = false;
-
-    Movie movieToBeDeleted;
-
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        Console.WriteLine($"On Initialized. Movies.Count = {Movies.Count}");
-    }
-
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
-        Console.WriteLine($"On Parameters Set. Movies.Count = {Movies.Count}");
-    }
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -44,11 +26,9 @@
         return true;
     }
 
-    private void DeleteMovie(Movie movie)
+    private async Task DeleteMovie(Movie movie)
     {
-        confirmation.show();
-        movieToBeDeleted = movie;
-        /*var confirmed = await js.Confirm($"Are you sure you want to delete {movie.Title}?");
+        var confirmed = await js.Confirm($"Are you sure you want to delete {movie.Title}?");
 
         if(confirmed)
         {
@@ -56,19 +36,7 @@
             await js.MyFunction("My Custom Message");
             Movies.Remove(movie);
         }
-        */
+        
     }
 
-    void onConfirm()
-    {
-        Movies.Remove(movieToBeDeleted);
-        confirmation.hide();
-        movieToBeDeleted = null;
-    }
-
-    void onCancel()
-    {
-        confirmation.hide();
-        movieToBeDeleted = null;
-    }
 }

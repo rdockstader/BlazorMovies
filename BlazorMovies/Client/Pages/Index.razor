@@ -6,10 +6,6 @@
         <MoviesList Movies="movies" />
     </div>
 
-    <button @onclick="AddNewMovie">Add New Movie</button>
-
-
-
 @code {
     private List<Movie> movies;
     protected override void OnInitialized()
@@ -17,10 +13,4 @@
         base.OnInitialized();
         movies = repository.GetMovies();
     }
-
-    private void AddNewMovie()
-    {
-        movies.Add(new Movie() { Title = "movie sample", ReleaseDate = DateTime.Today });
-    }
-
 }
