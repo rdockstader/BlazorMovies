@@ -15,5 +15,12 @@
 @code {
     [Parameter] public Movie Movie { get; set; }
     [Parameter] public EventCallback<Movie> DeleteMovie { get; set; }
+    private string movieURL = string.Empty;
 
+    protected override void OnInitialized()
+    {
+        movieURL = $"movie/{Movie.Id}/{Movie.Title.Replace(" ", "-")}";
+        base.OnInitialized();
+
+    }
 }

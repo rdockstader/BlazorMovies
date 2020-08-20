@@ -1,5 +1,7 @@
 ﻿@inject IJSRuntime js
 
+@if (Movies.Count > 0)
+{
     <div class="movies-container">
         <GenericList List="Movies">
             <ElementTemplate Context="movie">
@@ -7,6 +9,13 @@
             </ElementTemplate>
         </GenericList>
     </div>
+}
+else
+{
+<div>
+    <p>No Movies to show...</p>
+</div>
+}
 
 
 
@@ -30,13 +39,13 @@
     {
         var confirmed = await js.Confirm($"Are you sure you want to delete {movie.Title}?");
 
-        if(confirmed)
+        if (confirmed)
         {
             await js.LogToConsole("Movie Deleted");
             await js.MyFunction("My Custom Message");
             Movies.Remove(movie);
         }
-        
+
     }
 
 }

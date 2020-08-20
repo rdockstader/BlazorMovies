@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using BlazorMovies.Client.Helpers;
+using Tewr.Blazor.FileReader;
 
 namespace BlazorMovies.Client
 {
@@ -27,6 +28,7 @@ namespace BlazorMovies.Client
         {
             services.AddOptions(); // Authorization system
             services.AddTransient<IRepository, RepositoryInMemory>();
+            services.AddFileReaderService(Options => Options.InitializeOnFirstCall = true);
         }
     }
 }
