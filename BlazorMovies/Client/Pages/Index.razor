@@ -6,11 +6,28 @@
         <MoviesList Movies="movies" />
     </div>
 
+<CustomTypeAhead SearchMethod="SearchMethod">
+    <ResultTemplate>
+        @context
+    </ResultTemplate>
+</CustomTypeAhead>
+
 @code {
     private List<Movie> movies;
     protected override void OnInitialized()
     {
         base.OnInitialized();
         movies = repository.GetMovies();
+    }
+
+    private async Task<IEnumerable<string>> SearchMethod(string searchText)
+    {
+        await Task.Delay(2000);
+        if(searchText == "test")
+        {
+            return Enumerable.Empty<string>();
+        }
+
+        return new List<string>() { "Ryan", "Bob", "Jim" };
     }
 }
