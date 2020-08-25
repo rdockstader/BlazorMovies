@@ -6,6 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using BlazorMovies.Server.Helpers;
+using Microsoft.AspNetCore.Http;
 
 namespace BlazorMovies.Server
 {
@@ -22,6 +25,15 @@ namespace BlazorMovies.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ApplicationDbContext>(options => 
+                    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+
+            services.AddScoped<IFileStorageService, InAppStorageService>();
+            // Line Below enables Azure storage instead of local
+            // services.AddScoped<IFileStorageService, AzureStorageService>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
