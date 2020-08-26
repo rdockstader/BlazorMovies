@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using AutoMapper;
 using BlazorMovies.Server.Helpers;
 using BlazorMovies.Shared.Entities;
 using Microsoft.AspNetCore.Http;
@@ -16,17 +18,28 @@ namespace BlazorMovies.Server.Controllers
     {
         private readonly ApplicationDbContext context;
         private readonly IFileStorageService fileStorageService;
+        private readonly IMapper mapper;
 
-        public PeopleController(ApplicationDbContext context, IFileStorageService fileStorageService)
+        public PeopleController(ApplicationDbContext context, IFileStorageService fileStorageService, IMapper mapper)
         {
             this.context = context;
             this.fileStorageService = fileStorageService;
+            this.mapper = mapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Person>>> Get()
         {
             return await context.People.ToListAsync();
+        }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Person>> Get(int id)
+        {
+            var person = await context.People.FirstOrDefaultAsync(x => x.Id == id);
+
+            if(person == null) { return NotFound(); }
+
+            return person;
         }
         [HttpGet("search/{searchText}")]
         public async Task<ActionResult<List<Person>>> FilterByName(string searchText)
@@ -49,6 +62,41 @@ namespace BlazorMovies.Server.Controllers
             context.Add(person);
             await context.SaveChangesAsync();
             return person.Id;
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> Put(Person person)
+        {
+            var personDB = await context.People.FirstOrDefaultAsync(pers => pers.Id == person.Id);
+
+            if (personDB == null) { return NotFound(); }
+
+            personDB = mapper.Map(person, personDB);
+
+            if(!string.IsNullOrWhiteSpace(person.Picture))
+            {
+                var personPicture = Convert.FromBase64String(person.Picture);
+                personDB.Picture = await fileStorageService.EditFile(personPicture, "jpg", "people", personDB.Picture);
+            }
+
+            await context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var person = await context.People.FirstOrDefaultAsync(x => x.Id == id);
+            if (person == null)
+            {
+                return NotFound();
+            }
+
+            context.Remove(person);
+            await context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }

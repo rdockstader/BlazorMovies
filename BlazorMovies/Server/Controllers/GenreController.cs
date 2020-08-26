@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using BlazorMovies.Shared.Entities;
 using Microsoft.AspNetCore.Http;
@@ -19,6 +20,14 @@ namespace BlazorMovies.Server.Controllers
         {
             this.context = context;
         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Genre>> Get(int id)
+        {
+            var genre = await context.Genres.FirstOrDefaultAsync(x => x.Id == id);
+            if(genre == null) { return NotFound(); }
+
+            return genre;
+        }
 
         [HttpGet]
         public async Task<ActionResult<List<Genre>>> Get()
@@ -32,6 +41,29 @@ namespace BlazorMovies.Server.Controllers
             context.Add(genre);
             await context.SaveChangesAsync();
             return genre.Id;
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<int>> Put(Genre genre)
+        {
+            context.Attach(genre).State = EntityState.Modified;
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var genre = await context.Genres.FirstOrDefaultAsync(x => x.Id == id);
+            if(genre == null)
+            {
+                return NotFound();
+            }
+
+            context.Remove(genre);
+            await context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }

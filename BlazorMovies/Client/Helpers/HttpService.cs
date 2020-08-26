@@ -28,12 +28,21 @@ namespace BlazorMovies.Client.Helpers
             if(responseHTTP.IsSuccessStatusCode)
             {
                 var response = await Deserialize<T>(responseHTTP, defaultJsonSerilaizerOptions);
+                
                 return new HttpResponseWrapper<T>(response, true, responseHTTP);
             }
             else
             {
                 return new HttpResponseWrapper<T>(default, false, responseHTTP);
             }
+        }
+        public async Task<HttpResponseWrapper<object>> Put<T>(string url, T data)
+        {
+            var dataJson = JsonSerializer.Serialize(data);
+            var stringContent = new StringContent(dataJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PutAsync(url, stringContent);
+            return new HttpResponseWrapper<object>(null, response.IsSuccessStatusCode, response);
+
         }
 
 
@@ -66,6 +75,12 @@ namespace BlazorMovies.Client.Helpers
         {
             var responseString = await httpResponse.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<T>(responseString, options);
+        }
+
+        public async Task<HttpResponseWrapper<object>> Delete(string url)
+        {
+            var responseHTTP = await httpClient.DeleteAsync(url);
+            return new HttpResponseWrapper<object>(null, responseHTTP.IsSuccessStatusCode, responseHTTP);
         }
     }
 }

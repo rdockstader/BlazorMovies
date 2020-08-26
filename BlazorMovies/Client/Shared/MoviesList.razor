@@ -1,4 +1,5 @@
 ﻿@inject IJSRuntime js
+@inject IMoviesRepository moviesRepository
 
 @if (Movies.Count > 0)
 {
@@ -41,8 +42,7 @@ else
 
         if (confirmed)
         {
-            await js.LogToConsole("Movie Deleted");
-            await js.MyFunction("My Custom Message");
+            await moviesRepository.DeleteMovie(movie.Id);
             Movies.Remove(movie);
         }
 

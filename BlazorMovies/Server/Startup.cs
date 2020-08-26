@@ -9,6 +9,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using BlazorMovies.Server.Helpers;
 using Microsoft.AspNetCore.Http;
+using AutoMapper;
 
 namespace BlazorMovies.Server
 {
@@ -30,12 +31,15 @@ namespace BlazorMovies.Server
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+            services.AddAutoMapper(typeof(Startup));
+
 
             services.AddScoped<IFileStorageService, InAppStorageService>();
             // Line Below enables Azure storage instead of local
             // services.AddScoped<IFileStorageService, AzureStorageService>();
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews()
+                .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddRazorPages();
         }
 
