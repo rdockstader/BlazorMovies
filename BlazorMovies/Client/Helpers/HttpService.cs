@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -18,6 +19,21 @@ namespace BlazorMovies.Client.Helpers
         public HttpService(HttpClient httpclient)
         {
             this.httpClient = httpclient;
+        }
+
+        public async Task<HttpResponseWrapper<T>> Get<T>(string url)
+            {
+            var responseHTTP = await httpClient.GetAsync(url);
+
+            if(responseHTTP.IsSuccessStatusCode)
+            {
+                var response = await Deserialize<T>(responseHTTP, defaultJsonSerilaizerOptions);
+                return new HttpResponseWrapper<T>(response, true, responseHTTP);
+            }
+            else
+            {
+                return new HttpResponseWrapper<T>(default, false, responseHTTP);
+            }
         }
 
 

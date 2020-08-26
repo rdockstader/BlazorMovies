@@ -23,6 +23,7 @@ namespace BlazorMovies.Client
             builder.Services.AddScoped<IHttpService, HttpService>();
             builder.Services.AddScoped<IGenreRepository, GenreRepository>();
             builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+            builder.Services.AddScoped<IMoviesRepository, MoviesRepository>();
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
             await builder.Build().RunAsync();

@@ -1,33 +1,51 @@
 ﻿@page "/"
-@inject IRepository repository
+@inject IMoviesRepository moviesRepository
 
+@if (!IsLoading)
+{
     <div>
-        <h3>Movie</h3>
-        <MoviesList Movies="movies" />
-    </div>
-
-<CustomTypeAhead SearchMethod="SearchMethod">
-    <ResultTemplate>
-        @context
-    </ResultTemplate>
-</CustomTypeAhead>
-
-@code {
-    private List<Movie> movies;
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        movies = repository.GetMovies();
-    }
-
-    private async Task<IEnumerable<string>> SearchMethod(string searchText)
-    {
-        await Task.Delay(2000);
-        if(searchText == "test")
+        <h3>In Theaters</h3>
+        @if (InTheaters != null)
         {
-            return Enumerable.Empty<string>();
+            <MoviesList Movies="InTheaters" />
+        }
+        else
+        {
+            <h4>No Movies currently In theaters.</h4>
         }
 
-        return new List<string>() { "Ryan", "Bob", "Jim" };
+    </div>
+    <div>
+        <h3>Upcomming Releases</h3>
+        @if (UpcomingReleases != null)
+        {
+            <MoviesList Movies="UpcomingReleases" />
+        }
+        else
+        {
+            <h4>No Movies are upcomming for release.</h4>
+        }
+
+    </div>
+}
+else
+{
+
+}
+
+
+@code {
+    private bool IsLoading = false;
+    private List<Movie> InTheaters;
+    private List<Movie> UpcomingReleases;
+    protected async override Task OnInitializedAsync()
+    {
+        IsLoading = true;
+        var response = await moviesRepository.GetIndexPageDTO();
+        InTheaters = response.InTheaters;
+        UpcomingReleases = response.UpcomingReleases;
+
+        await base.OnInitializedAsync();
+        IsLoading = false;
     }
 }
