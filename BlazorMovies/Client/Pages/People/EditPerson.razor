@@ -1,9 +1,10 @@
 ﻿@page "/person/edit/{PersonId:int}"
 @inject PersonRepository personRepository
 @inject NavigationManager navigationManager
+@attribute [Authorize]
 
 <h3>EditPerson</h3>
-@if(Person != null)
+@if (Person != null)
 {
     <PersonForm Person="Person" OnValidSubmit="Edit" />
 }

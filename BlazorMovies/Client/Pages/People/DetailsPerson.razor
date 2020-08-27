@@ -1,5 +1,6 @@
 ﻿@page "/person/{PersonId:int}"
 @inject IPersonRepository personRepository
+@attribute [Authorize]
 
 <a class="btn btn-info" href="/people">Back</a>
 
