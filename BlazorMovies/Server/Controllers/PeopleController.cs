@@ -7,6 +7,8 @@ using AutoMapper;
 using BlazorMovies.Server.Helpers;
 using BlazorMovies.Shared.DTOs;
 using BlazorMovies.Shared.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +17,7 @@ namespace BlazorMovies.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class PeopleController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -37,6 +40,7 @@ namespace BlazorMovies.Server.Controllers
             return await queryable.Paginate(paginationDTO).ToListAsync();
         }
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Person>> Get(int id)
         {
             var person = await context.People.FirstOrDefaultAsync(x => x.Id == id);
@@ -47,6 +51,7 @@ namespace BlazorMovies.Server.Controllers
         }
 
         [HttpGet("details/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<DetailsPersonDTO>> GetPersonDetails(int id)
         {
             var person = await context.People.Where(x => x.Id == id)

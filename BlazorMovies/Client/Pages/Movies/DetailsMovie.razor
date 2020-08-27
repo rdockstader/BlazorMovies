@@ -1,6 +1,8 @@
 ﻿@page "/movies/{MovieId:int}"
 @page "/movies/{MovieId:int}/{MovieName}"
 @inject IMoviesRepository moviesRepository
+@inject IRatingRepository ratingRepository
+@inject IDisplayMessage displayMessage
 
 @if (model == null)
 {
@@ -21,6 +23,9 @@ else
         }
     }
     <text> | </text> <span>@model.Movie.ReleaseDate.Value.ToString("dd MMM yyyy ")</span>
+    <text> | Average: </text> @model.AverageVote.ToString("0.#")<text>/5 | Your vote: </text>
+    <Rating MaximumRating="5" SelectedRating="model.UserVote" OnVote="OnVote" />
+
 
     <div style="display: flex;">
         <span style="display: inline-block; margin-right: 5px;"><img src="@model.Movie.Poster" /></span>
@@ -37,12 +42,12 @@ else
         <div style="display: flex; flex-direction: column">
             @foreach (var actor in model.Actors)
             {
-            <div style="margin-bottom: 2px;">
-                <img style="width: 50px;" src="@actor.Picture" />
-                <span style="display: inline-block; width: 200px;"><a href="/person/@actor.Id/@actor.Name.Replace(" ", "-")">@actor.Name</a></span>
-                <span style="display: inline-block; width: 45px;">...</span>
-                <span>@actor.Character</span>
-            </div>
+                <div style="margin-bottom: 2px;">
+                    <img style="width: 50px;" src="@actor.Picture" />
+                    <span style="display: inline-block; width: 200px;"><a href="/person/@actor.Id/@actor.Name.Replace(" ", "-")">@actor.Name</a></span>
+                    <span style="display: inline-block; width: 45px;">...</span>
+                    <span>@actor.Character</span>
+                </div>
             }
 
         </div>
@@ -59,12 +64,25 @@ else
     {
         Console.WriteLine($"Movie ID: {MovieId}");
         model = await moviesRepository.GetDetailsMovieDTO(MovieId);
-        Console.WriteLine((model.Movie == null)? "Movie is null" : model.Movie.Title);
+        Console.WriteLine((model.Movie == null) ? "Movie is null" : model.Movie.Title);
         Console.WriteLine((model.Genres.Count < 1) ? "No Genre's included" : model.Genres.FirstOrDefault().Name);
         Console.WriteLine((model.Actors.Count < 1) ? "No Actors's included" : model.Actors.FirstOrDefault().Character);
 
 
         Console.WriteLine($"Movie ID: {MovieId}, Movie Name: {model.Movie.Title}");
         await base.OnInitializedAsync();
+    }
+
+    private async Task OnVote(int selectedRate)
+    {
+        model.UserVote = selectedRate;
+        var movieRating = new MovieRating()
+        {
+            Rate = selectedRate,
+            MovieId = MovieId
+        };
+
+        await ratingRepository.Vote(movieRating);
+        await displayMessage.DisplaySuccessMessage("your vote has been received!");
     }
 }
