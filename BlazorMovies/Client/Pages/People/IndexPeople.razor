@@ -14,20 +14,20 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th></th>
                     <th>Name</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in People)
                 {
-                    <tr>
-                        <td>
-                            <a class="btn btn-success" href="/person/edit/@item.Id">Edit</a>
-                            <button class="btn btn-danger" @onclick="@(() => DeletePerson(item.Id))">Delete</button>
-                        </td>
-                        <td>@item.Name</td>
-                    </tr>
+                <tr>
+                    <td><a href="person/@item.Id">@item.Name</a></td>
+                    <td>
+                        <a class="btn btn-success" href="/person/edit/@item.Id">Edit</a>
+                        <button class="btn btn-danger" @onclick="@(() => DeletePerson(item.Id))">Delete</button>
+                    </td>
+                </tr>
                 }
             </tbody>
         </table>
@@ -35,8 +35,8 @@
 </GenericList>
 
 @code {
-        List<Person> People;
-        PaginationDTO paginationDTO = new PaginationDTO() { RecordsPerPage = 1 };
+    List<Person> People;
+    PaginationDTO paginationDTO = new PaginationDTO();
     private int totalAmountPages;
 
     protected override async Task OnInitializedAsync()

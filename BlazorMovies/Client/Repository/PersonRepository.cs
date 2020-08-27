@@ -38,6 +38,11 @@ namespace BlazorMovies.Client.Repository
             var requestURL = $"{url}/{id}";
             return await httpService.GetHelper<Person>(requestURL);
         }
+        public async Task<DetailsPersonDTO> GetDetailsPersonDTO(int id)
+        {
+            var requestURL = $"{url}/details/{id}";
+            return await httpService.GetHelper<DetailsPersonDTO>(requestURL);
+        }
         public async Task CreatePerson(Person person)
         {
             var response = await httpService.Post(url, person);

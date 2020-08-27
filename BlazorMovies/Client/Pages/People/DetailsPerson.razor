@@ -1,0 +1,47 @@
+﻿@page "/person/{PersonId:int}"
+@inject IPersonRepository personRepository
+
+<a class="btn btn-info" href="/people">Back</a>
+
+@if (model != null)
+{
+    <div class="row">
+        <div class="col">
+            <h3>@model.Person.Name</h3>
+            <h4>@model.Person.DateOfBirth.Value.ToString("dd MMM, yyyy")</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <img src="@model.Person.Picture" style="width: 500px;" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h4>Appearances</h4>
+            <GenericList List="model.Appearances">
+                <ElementTemplate Context="movie">
+                    <p>@movie.Title | @movie.ReleaseDate.Value.ToString("dd MMM, yyyy") </p>
+                </ElementTemplate>
+            </GenericList>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <RenderMarkdown MarkdownContent="@model.Person.Biography"></RenderMarkdown>
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter] public int PersonId { get; set; }
+    private RenderFragment<Genre> linkGenre = (genre) =>@<a href="movies/search?genreId=@genre.Id">@genre.Name</a>;
+DetailsPersonDTO model;
+
+protected async override Task OnInitializedAsync()
+{
+model = await personRepository.GetDetailsPersonDTO(PersonId);
+await base.OnInitializedAsync();
+}
+}

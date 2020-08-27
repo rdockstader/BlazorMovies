@@ -45,6 +45,23 @@ namespace BlazorMovies.Server.Controllers
 
             return person;
         }
+
+        [HttpGet("details/{id}")]
+        public async Task<ActionResult<DetailsPersonDTO>> GetPersonDetails(int id)
+        {
+            var person = await context.People.Where(x => x.Id == id)
+                .Include(pers => pers.MoviesActors).ThenInclude(ma => ma.Movie)
+                .FirstOrDefaultAsync();
+
+            if (person == null) { return NotFound(); }
+
+            var model = new DetailsPersonDTO();
+            model.Person = person;
+            model.Appearances = person.MoviesActors.Select(x => x.Movie).OrderByDescending(x => x.ReleaseDate).ToList();
+
+            return model;
+
+        }
         [HttpGet("search/{searchText}")]
         public async Task<ActionResult<List<Person>>> FilterByName(string searchText)
         {
