@@ -23,7 +23,6 @@
         Movie = model.Movie;
         NotSelectedGenres = model.NotSelectedGenres;
         SelectedGenres = model.SelectedGenres;
-        if (SelectedGenres.Count > 0) { Console.WriteLine($"Selected Genre: {SelectedGenres.FirstOrDefault().Name}"); }
         SelectedActors = model.Actors;
 
         await base.OnInitializedAsync();

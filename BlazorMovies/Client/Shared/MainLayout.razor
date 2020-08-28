@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿
+@inherits LayoutComponentBase
+@inject BlazorMovies.Client.Auth.TokenRenewer tokenRenewer
+@inject NavigationManager navigationManager
+@inject IJSRuntime js
 
 <div class="sidebar">
     <NavMenu />
@@ -14,3 +18,25 @@
         @Body
     </div>
 </div>
+
+
+@code {      
+    [CascadingParameter] public Task<AuthenticationState> AuthenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        tokenRenewer.Initiate();
+        await js.InitializeInactivityTimer(DotNetObjectReference.Create(this));
+        await base.OnInitializedAsync();
+    }
+
+    [JSInvokable]
+    public async Task Logout()
+    {
+        var authState = await AuthenticationState;
+        if (authState.User.Identity.IsAuthenticated)
+        {
+            navigationManager.NavigateTo("logout");
+        }
+    }
+}

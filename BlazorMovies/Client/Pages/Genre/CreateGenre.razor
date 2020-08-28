@@ -12,8 +12,6 @@
 
     private async Task Create()
     {
-        Console.WriteLine(genre.Name);
-
         try
         {
             await genreRepository.CreateGenre(genre);
@@ -21,7 +19,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            Console.WriteLine($"Genre Creation Failed. Message: {ex.Message}");
         }
 
     }

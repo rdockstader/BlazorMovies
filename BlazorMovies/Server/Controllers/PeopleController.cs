@@ -83,7 +83,6 @@ namespace BlazorMovies.Server.Controllers
             {
                 var personPicture = Convert.FromBase64String(person.Picture);
                 person.Picture = await fileStorageService.SaveFile(personPicture, "jpg", "people");
-                Console.WriteLine("Person Picture Saved");
             }
             context.Add(person);
             await context.SaveChangesAsync();

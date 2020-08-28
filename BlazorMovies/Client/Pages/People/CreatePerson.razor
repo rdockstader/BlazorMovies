@@ -12,8 +12,6 @@
 
     private async Task Create()
     {
-        Console.WriteLine("creating person...");
-
         try
         {
             await personRepository.CreatePerson(Person);
@@ -21,7 +19,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            Console.WriteLine($"Creating Person Failed. Message: {ex.Message}");
         }
     }
 

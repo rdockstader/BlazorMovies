@@ -27,7 +27,7 @@ namespace BlazorMovies.Client.Helpers
 
         private async ValueTask DoDisplayMessage(string title, string message, string messageType)
         {
-            await js.InvokeVoidAsync("swal.fire", title, message, messageType);
+            await js.InvokeVoidAsync("swal", title, message, messageType);
         }
     }
 }

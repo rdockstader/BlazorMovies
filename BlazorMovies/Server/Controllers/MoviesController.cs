@@ -169,7 +169,6 @@ namespace BlazorMovies.Server.Controllers
             {
                 var personPicture = Convert.FromBase64String(movie.Poster);
                 movie.Poster = await fileStorageService.SaveFile(personPicture, "jpg", containerName);
-                Console.WriteLine("Movie Post Saved");
             }
 
             if (movie.MoviesActors != null)

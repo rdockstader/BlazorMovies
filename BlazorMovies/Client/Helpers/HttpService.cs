@@ -23,6 +23,15 @@ namespace BlazorMovies.Client.Helpers
 
         public async Task<HttpResponseWrapper<T>> Get<T>(string url)
             {
+            if(httpClient.DefaultRequestHeaders.Authorization != null)
+            {
+                Console.WriteLine($"Authoriation Header: {httpClient.DefaultRequestHeaders.Authorization.ToString()}");
+            }
+            else
+            {
+                Console.WriteLine("No authorization Header Found");
+            }
+            
             var responseHTTP = await httpClient.GetAsync(url);
 
             if(responseHTTP.IsSuccessStatusCode)

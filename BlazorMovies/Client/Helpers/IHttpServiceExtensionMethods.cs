@@ -16,7 +16,6 @@ namespace BlazorMovies.Client.Helpers
             {
                 throw new ApplicationException(await response.GetBody());
             }
-            Console.WriteLine("Request was successful.");
             return response.Response;
         }
 

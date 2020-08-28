@@ -62,14 +62,7 @@ else
 
     protected async override Task OnInitializedAsync()
     {
-        Console.WriteLine($"Movie ID: {MovieId}");
         model = await moviesRepository.GetDetailsMovieDTO(MovieId);
-        Console.WriteLine((model.Movie == null) ? "Movie is null" : model.Movie.Title);
-        Console.WriteLine((model.Genres.Count < 1) ? "No Genre's included" : model.Genres.FirstOrDefault().Name);
-        Console.WriteLine((model.Actors.Count < 1) ? "No Actors's included" : model.Actors.FirstOrDefault().Character);
-
-
-        Console.WriteLine($"Movie ID: {MovieId}, Movie Name: {model.Movie.Title}");
         await base.OnInitializedAsync();
     }
 
