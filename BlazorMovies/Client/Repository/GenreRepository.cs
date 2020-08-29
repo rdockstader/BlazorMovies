@@ -30,7 +30,7 @@ namespace BlazorMovies.Client.Repository
 
         public async Task<List<Genre>> GetGenres()
         {
-            var response = await httpService.Get<List<Genre>>(url);
+            var response = await httpService.Get<List<Genre>>(url, includeToken: false);
 
             if(!response.Success)
             {

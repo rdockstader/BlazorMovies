@@ -11,18 +11,32 @@ namespace BlazorMovies.Client.Helpers
 {
     public class HttpService : IHttpService
     {
-        private readonly HttpClient httpClient;
+        private readonly HttpClientWithToken httpClientWithToken;
+        private readonly HttpClientWithoutToken httpClientWithoutToken;
 
         private JsonSerializerOptions defaultJsonSerilaizerOptions =>
             new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
 
-        public HttpService(HttpClient httpclient)
+        public HttpService(HttpClientWithToken httpClientWithToken, HttpClientWithoutToken httpClientWithoutToken)
         {
-            this.httpClient = httpclient;
+            this.httpClientWithToken = httpClientWithToken;
+            this.httpClientWithoutToken = httpClientWithoutToken;
         }
 
-        public async Task<HttpResponseWrapper<T>> Get<T>(string url)
+        private HttpClient GetHttpClient(bool includeToken = true)
+        {
+            if(includeToken)
             {
+                return httpClientWithToken.HttpClient;
+            }
+
+            return httpClientWithoutToken.HttpClient;
+            
+        }
+
+        public async Task<HttpResponseWrapper<T>> Get<T>(string url, bool includeToken = true)
+        {
+            var httpClient = GetHttpClient(includeToken);
             if(httpClient.DefaultRequestHeaders.Authorization != null)
             {
                 Console.WriteLine($"Authoriation Header: {httpClient.DefaultRequestHeaders.Authorization.ToString()}");
@@ -47,6 +61,7 @@ namespace BlazorMovies.Client.Helpers
         }
         public async Task<HttpResponseWrapper<object>> Put<T>(string url, T data)
         {
+            var httpClient = GetHttpClient();
             var dataJson = JsonSerializer.Serialize(data);
             var stringContent = new StringContent(dataJson, Encoding.UTF8, "application/json");
             var response = await httpClient.PutAsync(url, stringContent);
@@ -55,8 +70,9 @@ namespace BlazorMovies.Client.Helpers
         }
 
 
-        public async Task<HttpResponseWrapper<object>> Post<T>(string url, T data)
+        public async Task<HttpResponseWrapper<object>> Post<T>(string url, T data, bool includeToken = true)
         {
+            var httpClient = GetHttpClient(includeToken);
             var dataJson = JsonSerializer.Serialize(data);
             var stringContent = new StringContent(dataJson, Encoding.UTF8, "application/json");
             var response = await httpClient.PostAsync(url, stringContent);
@@ -64,8 +80,9 @@ namespace BlazorMovies.Client.Helpers
 
         }
 
-        public async Task<HttpResponseWrapper<TResponse>> Post<T, TResponse>(string url, T data)
+        public async Task<HttpResponseWrapper<TResponse>> Post<T, TResponse>(string url, T data, bool includeToken = true)
         {
+            var httpClient = GetHttpClient(includeToken);
             var dataJson = JsonSerializer.Serialize(data);
             var stringContent = new StringContent(dataJson, Encoding.UTF8, "application/json");
             var response = await httpClient.PostAsync(url, stringContent);
@@ -88,6 +105,7 @@ namespace BlazorMovies.Client.Helpers
 
         public async Task<HttpResponseWrapper<object>> Delete(string url)
         {
+            var httpClient = GetHttpClient();
             var responseHTTP = await httpClient.DeleteAsync(url);
             return new HttpResponseWrapper<object>(null, responseHTTP.IsSuccessStatusCode, responseHTTP);
         }

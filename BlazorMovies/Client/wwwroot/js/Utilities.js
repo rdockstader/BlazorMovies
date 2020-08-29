@@ -16,15 +16,19 @@ function dotnetInstanceInvocation(dotnetHelper) {
 
 function initializeInactivityTimer(dotnetHelper) {
     var timer;
-    document.onmousemove = resetTimer;
-    document.onkeypress = resetTimer;
-
-    function resetTimer() {
-        clearTimout(timer);
-        timer = setTimeout(logout, 3000);
-    }
 
     function logout() {
         dotnetHelper.invokeMethodAsync("Logout");
     }
+
+    function resetTimer() {
+        clearTimeout(timer);
+        timer = setTimeout(logout, 1000 * 60 * 20); // 20 minutes
+    }
+
+    
+
+    document.onmousemove = resetTimer;
+    document.onkeypress = resetTimer;
 }
+

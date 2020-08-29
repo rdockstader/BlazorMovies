@@ -14,13 +14,13 @@ namespace BlazorMovies.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize]
     public class RatingController : ControllerBase
     {
         private readonly ApplicationDbContext context;
         private readonly UserManager<IdentityUser> userManager;
 
-        RatingController(ApplicationDbContext context,
+        public RatingController(ApplicationDbContext context,
             UserManager<IdentityUser> userManager)
         {
             this.context = context;

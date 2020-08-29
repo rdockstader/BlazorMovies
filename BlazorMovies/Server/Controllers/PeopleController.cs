@@ -17,12 +17,13 @@ namespace BlazorMovies.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Roles = "Admin")]
     public class PeopleController : ControllerBase
     {
         private readonly ApplicationDbContext context;
         private readonly IFileStorageService fileStorageService;
         private readonly IMapper mapper;
+        private readonly string containerName = "people";
 
         public PeopleController(ApplicationDbContext context, IFileStorageService fileStorageService, IMapper mapper)
         {
@@ -82,7 +83,7 @@ namespace BlazorMovies.Server.Controllers
             if(!string.IsNullOrWhiteSpace(person.Picture))
             {
                 var personPicture = Convert.FromBase64String(person.Picture);
-                person.Picture = await fileStorageService.SaveFile(personPicture, "jpg", "people");
+                person.Picture = await fileStorageService.SaveFile(personPicture, "jpg", containerName);
             }
             context.Add(person);
             await context.SaveChangesAsync();
@@ -101,7 +102,7 @@ namespace BlazorMovies.Server.Controllers
             if(!string.IsNullOrWhiteSpace(person.Picture))
             {
                 var personPicture = Convert.FromBase64String(person.Picture);
-                personDB.Picture = await fileStorageService.EditFile(personPicture, "jpg", "people", personDB.Picture);
+                personDB.Picture = await fileStorageService.EditFile(personPicture, "jpg", containerName, personDB.Picture);
             }
 
             await context.SaveChangesAsync();

@@ -17,15 +17,27 @@ namespace BlazorMovies.Server.Helpers
         {
             this.env = env;
             this.httpContextAccessor = httpContextAccessor;
+            if (string.IsNullOrWhiteSpace(env.WebRootPath))
+            {
+                env.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            }
         }
         public Task DeleteFile(string fileRoute, string containerName)
         {
-            var fileName = Path.GetFileName(fileRoute);
-            string fileDirectory = Path.Combine(env.WebRootPath, containerName, fileName);
-            if(File.Exists(fileDirectory))
+            if(fileRoute != null)
             {
-                File.Delete(fileDirectory);
+                var fileName = Path.GetFileName(fileRoute);
+                if(fileName != null)
+                {
+                    string fileDirectory = Path.Combine(env.WebRootPath, containerName, fileName);
+                    if (File.Exists(fileDirectory))
+                    {
+                        File.Delete(fileDirectory);
+                    }
+                }
+                
             }
+            
 
             return Task.FromResult(0);
         }

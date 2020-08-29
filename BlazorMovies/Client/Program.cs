@@ -11,7 +11,7 @@ using BlazorMovies.Client.Helpers;
 using Tewr.Blazor.FileReader;
 using BlazorMovies.Client.Repository;
 using Microsoft.AspNetCore.Components.Authorization;
-using BlazorMovies.Client.Auth;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 
 namespace BlazorMovies.Client
 {
@@ -22,8 +22,11 @@ namespace BlazorMovies.Client
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
 
-            builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-
+            builder.Services.AddHttpClient<HttpClientWithToken>(
+                client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+                .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
+            builder.Services.AddHttpClient<HttpClientWithoutToken>(
+                client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
             ConfigureServices(builder.Services);
             
             await builder.Build().RunAsync();
@@ -44,18 +47,10 @@ namespace BlazorMovies.Client
             services.AddFileReaderService(Options => Options.InitializeOnFirstCall = true);
 
             // Security
-            services.AddAuthorizationCore();
+            services.AddApiAuthorization();
 
-            // services.AddScoped<AuthenticationStateProvider, DummyAuthenitcationStateProvider>();
-            services.AddScoped<JWTAuthenticationStateProvider>();
-            services.AddScoped<AuthenticationStateProvider, JWTAuthenticationStateProvider>(
-                provider => provider.GetRequiredService<JWTAuthenticationStateProvider>());
-            services.AddScoped<ILoginService, JWTAuthenticationStateProvider>(
-                provider => provider.GetRequiredService<JWTAuthenticationStateProvider>());
+
             // Security End
-
-
-            services.AddScoped<TokenRenewer>();
         }
     }
 }

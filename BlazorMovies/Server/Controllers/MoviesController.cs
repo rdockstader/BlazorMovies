@@ -18,14 +18,14 @@ namespace BlazorMovies.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Roles = "Admin")]
     public class MoviesController : ControllerBase
     {
         private readonly ApplicationDbContext context;
         private readonly IFileStorageService fileStorageService;
         private readonly IMapper mapper;
         private readonly UserManager<IdentityUser> userManager;
-        private string containerName = "movies";
+        private readonly string containerName = "movies";
 
         public MoviesController(ApplicationDbContext context, IFileStorageService fileStorageService, 
             IMapper mapper, UserManager<IdentityUser> userManager)
@@ -80,11 +80,11 @@ namespace BlazorMovies.Server.Controllers
             {
                 var user = await userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
                 var userId = user.Id;
-
+                Console.Write($"UserID: {userId}");
                 var uservoteDb = await context.MovieRatings
                     .FirstOrDefaultAsync(x => x.MovieId == id && x.UserId == userId);
-
-                if(uservoteDb != null)
+                Console.Write($"User Rating: {uservoteDb.Rate}");
+                if (uservoteDb != null)
                 {
                     uservote = uservoteDb.Rate;
                 }

@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System;
+using Microsoft.AspNetCore.Authentication;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace BlazorMovies.Server
 {
@@ -22,6 +24,7 @@ namespace BlazorMovies.Server
     {
         public Startup(IConfiguration configuration)
         {
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             Configuration = configuration;
         }
 
@@ -35,22 +38,19 @@ namespace BlazorMovies.Server
                     options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             // Security
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+            services.AddDefaultIdentity<IdentityUser>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+            })
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(
-                options => options.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(Configuration["jwt:key"])),
-                    ClockSkew = TimeSpan.Zero
-                });
+            services.AddIdentityServer()
+                .AddApiAuthorization<IdentityUser, ApplicationDbContext>()
+                .AddProfileService<IdentityProfileService>();
+
+            services.AddAuthentication()
+                .AddIdentityServerJwt();
             // End Security
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -90,6 +90,7 @@ namespace BlazorMovies.Server
             // Security
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseIdentityServer();
             // End Security
 
             app.UseEndpoints(endpoints =>

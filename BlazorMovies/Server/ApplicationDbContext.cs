@@ -1,6 +1,10 @@
 ﻿using BlazorMovies.Shared.Entities;
+using IdentityServer4.EntityFramework.Options;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BlazorMovies.Server
 {
-    public class ApplicationDbContext: IdentityDbContext
+    public class ApplicationDbContext: ApiAuthorizationDbContext<IdentityUser>
     {
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Movie> Movies { get; set; }
@@ -17,7 +21,7 @@ namespace BlazorMovies.Server
         public DbSet<MoviesGenres> MoviesGenres { get; set; }
         public DbSet<MovieRating> MovieRatings { get; set; }
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
 
         }

@@ -1,6 +1,5 @@
 ﻿
 @inherits LayoutComponentBase
-@inject BlazorMovies.Client.Auth.TokenRenewer tokenRenewer
 @inject NavigationManager navigationManager
 @inject IJSRuntime js
 
@@ -25,7 +24,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        tokenRenewer.Initiate();
         await js.InitializeInactivityTimer(DotNetObjectReference.Create(this));
         await base.OnInitializedAsync();
     }
@@ -36,7 +34,7 @@
         var authState = await AuthenticationState;
         if (authState.User.Identity.IsAuthenticated)
         {
-            navigationManager.NavigateTo("logout");
+            navigationManager.NavigateTo("authentication/logout");
         }
     }
 }
